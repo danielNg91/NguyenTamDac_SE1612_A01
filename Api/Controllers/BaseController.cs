@@ -6,7 +6,8 @@ using System.Linq.Expressions;
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
-public class BaseController : Controller
+[ApiController]
+public class BaseController : ControllerBase
 {
     private IMapper _mapper;
     

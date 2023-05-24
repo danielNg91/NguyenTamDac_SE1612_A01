@@ -30,7 +30,7 @@ public class FlowerBouquetController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateFlowerBouquet(CreateFlowerBouquet req)
+    public async Task<IActionResult> CreateFlowerBouquet([FromBody] CreateFlowerBouquet req)
     {
         var target = await _flowerRepository.FirstOrDefaultAsync(f => f.FlowerBouquetId == req.FlowerBouquetId);
         if (target != null)
@@ -47,14 +47,14 @@ public class FlowerBouquetController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFlowerBouquet(int id)
     {
-        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException("Entity not found"));
+        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException());
         return Ok(target);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFlowerBouquet(int id, UpdateFlowerBouquet req)
+    public async Task<IActionResult> UpdateFlowerBouquet(int id, [FromBody] UpdateFlowerBouquet req)
     {
-        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException("Entity not found"));
+        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException());
         FlowerBouquet entity = Mapper.Map(req, target);
         await ValidateNavigations(entity);
         await _flowerRepository.UpdateAsync(entity);
@@ -64,7 +64,7 @@ public class FlowerBouquetController : BaseController
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFlowerBouquet(int id)
     {
-        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException("Entity not found"));
+        var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException());
         await _flowerRepository.DeleteAsync(target);
         return StatusCode(StatusCodes.Status204NoContent);
     }

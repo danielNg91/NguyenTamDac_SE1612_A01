@@ -19,7 +19,7 @@ public class BadRequestException : BaseHttpException
     {
     }
 
-    public BadRequestException(string message, string errorCode = null, string refLink = null) : base(message, statusCode, errorCode, refLink)
+    public BadRequestException(string message = "Bad Request", string errorCode = null, string refLink = null) : base(message, statusCode, errorCode, refLink)
     {
     }
 }
