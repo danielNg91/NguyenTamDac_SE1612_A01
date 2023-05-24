@@ -9,10 +9,13 @@ namespace Repository;
 public interface IRepository<T>
 {
     Task CreateAsync(T entity);
+    public Task<IEnumerable<T>> GetAsync(
+       Expression<Func<T, bool>> filter = null,
+       int first = 0, int offset = 0,
+       params string[] navigationProperties);
     Task<List<T>> ListAsync();
-    Task<T> FindByIdAsync(int id);
     Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
-    Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+    Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties);
     Task<T> UpdateAsync(T updated);
-    Task DeleteAsync(int id);
+    Task DeleteAsync(T entity);
 }
