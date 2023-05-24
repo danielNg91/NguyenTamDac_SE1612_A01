@@ -10,8 +10,6 @@ public class CreateOrder : IMapTo<Order>
     [Range(1, int.MaxValue)]
     public int OrderId { get; set; }
 
-    public int? CustomerId { get; set; }
-
     [Required]
     public DateTime OrderDate { get; set; }
     

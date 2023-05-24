@@ -32,6 +32,7 @@ public class OrdersController : BaseController
             throw new BadRequestException("Entity existed");
         }
         Order entity = Mapper.Map(req, new Order());
+        entity.CustomerId = CurrentUserID;
         await _orderRepository.CreateAsync(entity);
         return StatusCode(StatusCodes.Status201Created);
     }
