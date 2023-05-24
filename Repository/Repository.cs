@@ -8,10 +8,10 @@ public class Repository<T> : IRepository<T> where T : class
     protected FUFlowerBouquetManagementContext _context;
     protected DbSet<T> dbSet;
     public Repository(
-        FUFlowerBouquetManagementContext _context)
+        FUFlowerBouquetManagementContext context)
     {
-        _context = _context;
-        dbSet = _context.Set<T>();
+        _context = context;
+        dbSet = context.Set<T>();
     }
     public async Task CreateAsync(T entity)
     {
@@ -57,6 +57,16 @@ public class Repository<T> : IRepository<T> where T : class
         return query;
     }
 
+    public async Task<T> FoundOrThrow(Expression<Func<T, bool>> predicate, Exception error)
+    {
+        var target = await this.FirstOrDefaultAsync(predicate);
+        if (target == null)
+        {
+            throw error;
+        }
+        return target;
+    }
+
     public virtual async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
     {
         var query = ApplyNavigation(dbSet.AsQueryable(), navigationProperties);
@@ -64,14 +74,15 @@ public class Repository<T> : IRepository<T> where T : class
         return entity;
     }
 
-    public async Task<List<T>> ListAsync()
+    public async Task<List<T>> ToListAsync()
     {
         return await dbSet.AsNoTracking().ToListAsync();
     }
 
-    public Task<T> UpdateAsync(T updated)
+    public async Task UpdateAsync(T updated)
     {
-        throw new NotImplementedException();
+        _context.Attach(updated).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
     }
 
     public async Task<IList<T>> WhereAsync(Expression<Func<T, bool>> predicate, params string[] navigationProperties)
