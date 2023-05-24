@@ -6,8 +6,6 @@ namespace Api.Models;
 
 public class UpdateFlowerBouquet : IMapTo<FlowerBouquet>
 {
-    public int? CategoryId { get; set; }
-
     public string? FlowerBouquetName { get; set; }
 
     public string? Description { get; set; }

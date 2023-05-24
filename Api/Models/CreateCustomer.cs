@@ -7,6 +7,7 @@ namespace Api.Models;
 public class CreateCustomer : IMapTo<Customer>
 {
     [Required]
+    [Range(1, int.MaxValue)]
     public int CustomerId { get; set; }
     
     [Required, EmailAddress]
