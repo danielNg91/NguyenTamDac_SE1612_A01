@@ -3,18 +3,21 @@ using Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Repository.Models;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Net;
 
 namespace Api.Controllers;
 
-public class FlowerBouquetController : BaseController
+
+[Route("api/v1/flower-bouquets")]
+public class FlowerBouquetsController : BaseController
 {
     private readonly IRepository<FlowerBouquet> _flowerRepository;
     private readonly IRepository<Category> _catgoryRepository;
     private readonly IRepository<Supplier> _supplierRepository;
 
-    public FlowerBouquetController(IRepository<FlowerBouquet> flowerRepository,
+    public FlowerBouquetsController(IRepository<FlowerBouquet> flowerRepository,
         IRepository<Category> catgoryRepository,
         IRepository<Supplier> supplierRepository)
     {

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class BaseController : ControllerBase
 {

@@ -5,11 +5,13 @@ using Repository;
 using Repository.Models;
 
 namespace Api.Controllers;
-public class CustomerController : BaseController
+
+[Route("api/v1/customers")]
+public class CustomersController : BaseController
 {
     private readonly IRepository<Customer> _customerRepository;
 
-    public CustomerController(IRepository<Customer> customerRepository)
+    public CustomersController(IRepository<Customer> customerRepository)
     {
         _customerRepository = customerRepository;
     }
