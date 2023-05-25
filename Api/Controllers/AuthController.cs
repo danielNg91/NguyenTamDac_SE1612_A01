@@ -25,7 +25,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody]LoginCredentials credentials)
+    public async Task<IActionResult> Login([FromBody] LoginCredentials credentials)
     {
         if (credentials.Email.Equals(_appSettings.Value.AdminAccount.Email) &&
             credentials.Password.Equals(_appSettings.Value.AdminAccount.Password))
@@ -35,13 +35,13 @@ public class AuthController : BaseController
         }
 
         var user = await _userRepository.FoundOrThrow(
-            u => u.Email.Equals(credentials.Email) && u.Password.Equals(credentials.Password), 
+            u => u.Email.Equals(credentials.Email) && u.Password.Equals(credentials.Password),
             new ForbiddenException());
         await SetIdentity(user.CustomerId.ToString(), user.Email, PolicyName.CUSTOMER);
         return Ok();
     }
 
-    private async Task SetIdentity(string userId, string email, string role) 
+    private async Task SetIdentity(string userId, string email, string role)
     {
         var claims = new List<Claim>
                     {
@@ -53,5 +53,33 @@ public class AuthController : BaseController
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(claimsIdentity));
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterAccount req)
+    {
+        await ValidateRegisterFields(req);
+        await _userRepository.CreateAsync(Mapper.Map(req, new Customer()));
+        return Ok();
+    }
+
+    private async Task ValidateRegisterFields(RegisterAccount req)
+    {
+        if (req.Email.Equals(_appSettings.Value.AdminAccount.Email))
+        {
+            throw new BadRequestException("Email already existed");
+        }
+
+        var isEmailExisted = (await _userRepository.FirstOrDefaultAsync(u => u.Email == req.Email)) != null;
+        if (isEmailExisted)
+        {
+            throw new BadRequestException("Email already existed");
+        }
+
+        var isIdExisted = (await _userRepository.FirstOrDefaultAsync(u => u.CustomerId == req.CustomerId)) != null;
+        if (isIdExisted)
+        {
+            throw new BadRequestException("UserId already existed");
+        }
     }
 }

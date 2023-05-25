@@ -1,6 +1,7 @@
 ﻿using Api.Models;
 using Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Repository;
 using Repository.Models;
 
@@ -11,9 +12,11 @@ namespace Api.Controllers;
 public class CustomersController : BaseController
 {
     private readonly IRepository<Customer> _customerRepository;
+    private readonly IOptions<AppSettings> _appSettings;
 
-    public CustomersController(IRepository<Customer> customerRepository)
+    public CustomersController(IOptions<AppSettings> appSettings, IRepository<Customer> customerRepository)
     {
+        _appSettings = appSettings;
         _customerRepository = customerRepository;
     }
 
@@ -27,14 +30,30 @@ public class CustomersController : BaseController
     [HttpPost]
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomer req)
     {
-        var target = await _customerRepository.FirstOrDefaultAsync(c => c.CustomerId == req.CustomerId);
-        if (target != null)
-        {
-            throw new BadRequestException("Entity existed");
-        }
+        await ValidateRegisterFields(req);
         Customer entity = Mapper.Map(req, new Customer());
         await _customerRepository.CreateAsync(entity);
         return StatusCode(StatusCodes.Status201Created);
+    }
+
+    private async Task ValidateRegisterFields(CreateCustomer req)
+    {
+        if (req.Email.Equals(_appSettings.Value.AdminAccount.Email))
+        {
+            throw new BadRequestException("Email already existed");
+        }
+
+        var isEmailExisted = (await _customerRepository.FirstOrDefaultAsync(u => u.Email == req.Email)) != null;
+        if (isEmailExisted)
+        {
+            throw new BadRequestException("Email already existed");
+        }
+
+        var isIdExisted = (await _customerRepository.FirstOrDefaultAsync(u => u.CustomerId == req.CustomerId)) != null;
+        if (isIdExisted)
+        {
+            throw new BadRequestException("UserId already existed");
+        }
     }
 
     [HttpGet("{id}")]
