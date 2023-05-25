@@ -20,7 +20,7 @@ public class OrdersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders(DateTime? startDate, DateTime? endDate)
+    public async Task<IActionResult> GetOrders(DateTime? startDate, DateTime? endDate, int? id)
     {
         IOrderedEnumerable<Order> orders;
 
@@ -44,6 +44,11 @@ public class OrdersController : BaseController
             orders = (await _orderRepository.WhereAsync(
                 o => DateTime.Compare(o.OrderDate, (DateTime)startDate) >= 0 && DateTime.Compare(o.OrderDate, (DateTime)endDate) <= 0)
                 ).OrderByDescending(c => c.Total);
+        }
+
+        if (id != null)
+        {
+            orders = orders.Where(o => o.CustomerId == id).OrderByDescending(c => c.Total);
         }
         return Ok(orders);
     }
