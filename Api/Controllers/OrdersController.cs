@@ -1,5 +1,7 @@
 ﻿using Api.Models;
+using Api.Utils;
 using Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Repository.Models;
@@ -12,11 +14,16 @@ public class OrdersController : BaseController
 {
     private readonly IRepository<Order> _orderRepository;
     private readonly IRepository<OrderDetail> _oderDetailRepository;
+    private readonly IRepository<FlowerBouquet> _flowerRepository;
 
-    public OrdersController(IRepository<Order> orderRepository, IRepository<OrderDetail> oderDetailRepository)
+    public OrdersController(
+        IRepository<Order> orderRepository, 
+        IRepository<OrderDetail> oderDetailRepository, 
+        IRepository<FlowerBouquet> flowerRepository)
     {
         _orderRepository = orderRepository;
         _oderDetailRepository = oderDetailRepository;
+        _flowerRepository = flowerRepository;
     }
 
     [HttpGet]
@@ -53,7 +60,7 @@ public class OrdersController : BaseController
         return Ok(orders);
     }
 
-
+    [Authorize(Roles = PolicyName.CUSTOMER)]
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrder req)
     {
@@ -64,7 +71,24 @@ public class OrdersController : BaseController
         }
         Order entity = Mapper.Map(req, new Order());
         entity.CustomerId = CurrentUserID;
+        List<OrderDetail> orderDetails = new List<OrderDetail>();
+        foreach(var flowerReq in req.Flowers)
+        {
+            var flower = await _flowerRepository.FoundOrThrow(
+                f => f.FlowerBouquetId == flowerReq.FlowerBouquetId, new BadRequestException("FlowerId not found")
+                );
+            orderDetails.Add(new OrderDetail
+            {
+                FlowerBouquetId = flower.FlowerBouquetId,
+                OrderId = req.OrderId,
+                Discount = 0,
+                Quantity = flowerReq.Quantity,
+                UnitPrice = flower.UnitPrice,
+            });
+        }
+
         await _orderRepository.CreateAsync(entity);
+        await _oderDetailRepository.CreateAsync(orderDetails);
         return StatusCode(StatusCodes.Status201Created);
     }
 

@@ -19,6 +19,12 @@ public class Repository<T> : IRepository<T> where T : class
         await _context.SaveChangesAsync();
     }
 
+    public async Task CreateAsync(IEnumerable<T> entities)
+    {
+        await _context.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(T entity)
     {
         dbSet.Remove(entity);

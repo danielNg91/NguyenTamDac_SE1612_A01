@@ -12,10 +12,12 @@ public class CreateOrder : IMapTo<Order>
 
     [Required]
     public DateTime OrderDate { get; set; }
-    
+
+    [Required]
+    public CartFlower[] Flowers { get; set; }
+
     public DateTime? ShippedDate { get; set; }
     
-    public decimal? Total { get; set; }
-    
     public string OrderStatus { get; set; }
+
 }

@@ -9,6 +9,7 @@ namespace Repository;
 public interface IRepository<T>
 {
     Task CreateAsync(T entity);
+    Task CreateAsync(IEnumerable<T> entities);
     Task<T> FoundOrThrow(Expression<Func<T, bool>> predicate, Exception error);
     public Task<IEnumerable<T>> GetAsync(
        Expression<Func<T, bool>> filter = null,
