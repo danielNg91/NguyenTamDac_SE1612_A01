@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 #nullable disable
 
@@ -14,6 +15,7 @@ namespace Repository.Models
         public double Discount { get; set; }
 
         public virtual FlowerBouquet FlowerBouquet { get; set; }
+        [JsonIgnore]
         public virtual Order Order { get; set; }
     }
 }

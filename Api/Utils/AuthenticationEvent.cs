@@ -10,4 +10,9 @@ public class AuthenticationEvent : CookieAuthenticationEvents
     {
         throw new ForbiddenException();
     }
+
+    public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> context)
+    {
+        throw new ForbiddenException();
+    }
 }

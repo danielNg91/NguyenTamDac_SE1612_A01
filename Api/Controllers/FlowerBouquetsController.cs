@@ -11,21 +11,24 @@ using System.Net;
 
 namespace Api.Controllers;
 
-[Authorize(Roles = PolicyName.CUSTOMER)]
+[Authorize(Roles = PolicyName.ADMIN)]
 [Route("api/v1/flower-bouquets")]
 public class FlowerBouquetsController : BaseController
 {
     private readonly IRepository<FlowerBouquet> _flowerRepository;
     private readonly IRepository<Category> _catgoryRepository;
     private readonly IRepository<Supplier> _supplierRepository;
-
+    private readonly IRepository<OrderDetail> _oderDetailRepository;
+                                                               
     public FlowerBouquetsController(IRepository<FlowerBouquet> flowerRepository,
         IRepository<Category> catgoryRepository,
-        IRepository<Supplier> supplierRepository)
+        IRepository<Supplier> supplierRepository,
+        IRepository<OrderDetail> oderDetailRepository)
     {
         _flowerRepository = flowerRepository;
         _catgoryRepository = catgoryRepository;
         _supplierRepository = supplierRepository;
+        _oderDetailRepository = oderDetailRepository;
     }
 
     [HttpGet]
@@ -69,6 +72,11 @@ public class FlowerBouquetsController : BaseController
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFlowerBouquet(int id)
     {
+        var isFree = await _oderDetailRepository.FirstOrDefaultAsync(od => od.FlowerBouquetId == id) == null;
+        if (!isFree)
+        {
+            throw new BadRequestException("Flower had been ordered, cannot delete");
+        }
         var target = await _flowerRepository.FoundOrThrow(f => f.FlowerBouquetId == id, new NotFoundException());
         await _flowerRepository.DeleteAsync(target);
         return StatusCode(StatusCodes.Status204NoContent);

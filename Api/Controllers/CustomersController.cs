@@ -1,5 +1,7 @@
 ﻿using Api.Models;
+using Api.Utils;
 using Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Repository;
@@ -8,6 +10,7 @@ using Repository.Models;
 namespace Api.Controllers;
 
 
+[Authorize(Roles = PolicyName.ADMIN)]
 [Route("api/v1/customers")]
 public class CustomersController : BaseController
 {

@@ -11,16 +11,41 @@ namespace Api.Controllers;
 public class OrdersController : BaseController
 {
     private readonly IRepository<Order> _orderRepository;
+    private readonly IRepository<OrderDetail> _oderDetailRepository;
 
-    public OrdersController(IRepository<Order> orderRepository)
+    public OrdersController(IRepository<Order> orderRepository, IRepository<OrderDetail> oderDetailRepository)
     {
         _orderRepository = orderRepository;
+        _oderDetailRepository = oderDetailRepository;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetOrders()
+    public async Task<IActionResult> GetOrders(DateTime? startDate, DateTime? endDate)
     {
-        return Ok(await _orderRepository.ToListAsync());
+        IOrderedEnumerable<Order> orders;
+
+        if (startDate == null && endDate == null)
+        {
+            orders = (await _orderRepository.ToListAsync()).OrderByDescending(c => c.Total);
+        } else
+        {
+            if (startDate != null && endDate == null)
+            {
+                endDate = startDate;
+            } else if (startDate == null && endDate != null)
+            {
+                startDate = endDate;
+            }
+            
+            if (DateTime.Compare((DateTime)startDate, (DateTime)endDate) > 0)
+            {
+                throw new BadRequestException("StartDate cannot be later than EndDate");
+            }
+            orders = (await _orderRepository.WhereAsync(
+                o => DateTime.Compare(o.OrderDate, (DateTime)startDate) >= 0 && DateTime.Compare(o.OrderDate, (DateTime)endDate) <= 0)
+                ).OrderByDescending(c => c.Total);
+        }
+        return Ok(orders);
     }
 
 
@@ -41,7 +66,13 @@ public class OrdersController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(int id)
     {
-        var target = await _orderRepository.FoundOrThrow(c => c.OrderId == id, new NotFoundException());
+        var target = await _orderRepository.FirstOrDefaultAsync(c => c.OrderId == id);
+        if (target == null)
+        {
+            throw new NotFoundException();
+        }
+        var details = await _oderDetailRepository.WhereAsync(d => d.OrderId == id, new string[] { nameof(FlowerBouquet) });
+        target.OrderDetails = details;
         return Ok(target);
     }
 
@@ -60,5 +91,18 @@ public class OrdersController : BaseController
         var target = await _orderRepository.FoundOrThrow(c => c.OrderId == id, new NotFoundException());
         await _orderRepository.DeleteAsync(target);
         return StatusCode(StatusCodes.Status204NoContent);
+    }
+
+    [HttpGet("{id}/order-details")]
+    public async Task<IActionResult> GetOrderDetails(int id)
+    {
+        var target = await _oderDetailRepository.FirstOrDefaultAsync(
+            c => c.OrderId == id, new string[] { nameof(FlowerBouquet) }
+            );
+        if (target == null)
+        {
+            throw new NotFoundException();
+        }
+        return Ok(target);
     }
 }
