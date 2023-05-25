@@ -1,5 +1,7 @@
 using Api;
+using Api.Utils;
 using AutoWrapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Repository;
@@ -12,7 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.AddControllers();
+services.AddControllers(options =>
+{
+    options.Filters.Add<ValidateModelStateFilter>();
+});
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -20,6 +25,8 @@ services.Configure<AppSettings>(configuration.GetSection(nameof(AppSettings)));
 
 services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+services.AddAppAuthentication();
+services.AddAppAuthorization();
 
 services.AddDbContext<FUFlowerBouquetManagementContext>(options =>
 {
@@ -31,6 +38,8 @@ services.AddDbContext<FUFlowerBouquetManagementContext>(options =>
 });
 
 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+services.AddTransient<AuthenticationEvent>();
+
 
 var app = builder.Build();
 
@@ -45,6 +54,8 @@ app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false
 
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

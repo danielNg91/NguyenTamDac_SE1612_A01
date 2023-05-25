@@ -1,5 +1,7 @@
 ﻿using Api.Models;
+using Api.Utils;
 using Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Repository.Models;
@@ -9,7 +11,7 @@ using System.Net;
 
 namespace Api.Controllers;
 
-
+[Authorize(Roles = PolicyName.CUSTOMER)]
 [Route("api/v1/flower-bouquets")]
 public class FlowerBouquetsController : BaseController
 {
