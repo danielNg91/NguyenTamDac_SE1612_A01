@@ -1,10 +1,10 @@
 ﻿using Api.Models;
 using Api.Utils;
 using Application.Exceptions;
+using BusinessObjects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
-using Repository.Models;
 
 namespace Api.Controllers;
 

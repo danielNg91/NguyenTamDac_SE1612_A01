@@ -1,6 +1,6 @@
 ﻿using Api.Mappings;
+using BusinessObjects;
 using System.ComponentModel.DataAnnotations;
-using Repository.Models;
 
 namespace Api.Models;
 

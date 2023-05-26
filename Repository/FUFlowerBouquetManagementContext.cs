@@ -1,10 +1,9 @@
-﻿using System;
+﻿using BusinessObjects;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace Repository.Models
+namespace Repository
 {
     public partial class FUFlowerBouquetManagementContext : DbContext
     {

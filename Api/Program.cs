@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Repository;
-using Repository.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);

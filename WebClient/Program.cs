@@ -1,7 +1,13 @@
+using WebClient;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+services.AddControllersWithViews();
+
+services.Configure<AppSettings>(configuration.GetSection(nameof(AppSettings)));
 
 var app = builder.Build();
 

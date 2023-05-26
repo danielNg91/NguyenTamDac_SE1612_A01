@@ -1,12 +1,12 @@
 ﻿using Api.Models;
 using Api.Utils;
 using Application.Exceptions;
+using BusinessObjects;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Repository;
-using Repository.Models;
 using System.Security.Claims;
 
 namespace Api.Controllers;
