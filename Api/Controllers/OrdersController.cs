@@ -31,10 +31,15 @@ public class OrdersController : BaseController
     {
         IOrderedEnumerable<Order> orders;
 
-        if (startDate == null && endDate == null)
+        if (id != null)
+        {
+            orders = (await _orderRepository.WhereAsync(o => o.CustomerId == id)).OrderByDescending(c => c.Total);
+        } else
         {
             orders = (await _orderRepository.ToListAsync()).OrderByDescending(c => c.Total);
-        } else
+        }
+
+        if (startDate != null || endDate != null)
         {
             if (startDate != null && endDate == null)
             {
@@ -48,14 +53,9 @@ public class OrdersController : BaseController
             {
                 throw new BadRequestException("StartDate cannot be later than EndDate");
             }
-            orders = (await _orderRepository.WhereAsync(
-                o => DateTime.Compare(o.OrderDate, (DateTime)startDate) >= 0 && DateTime.Compare(o.OrderDate, (DateTime)endDate) <= 0)
+            orders = orders.Where(
+                o => DateTime.Compare(o.OrderDate, (DateTime)startDate) >= 0 && DateTime.Compare(o.OrderDate, (DateTime)endDate) <= 0
                 ).OrderByDescending(c => c.Total);
-        }
-
-        if (id != null)
-        {
-            orders = orders.Where(o => o.CustomerId == id).OrderByDescending(c => c.Total);
         }
         return Ok(orders);
     }
