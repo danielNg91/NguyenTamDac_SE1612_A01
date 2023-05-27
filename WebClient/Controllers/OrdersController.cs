@@ -15,18 +15,46 @@ public class OrdersController : BaseController
     {
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
     {
-        List<Order> orders;
-        if (IsAdmin)
+        try
         {
-            orders = await ApiClient.GetAsync<List<Order>>($"{BaseUri}/{OrdersUrl}");
-        }
-        else
+            ValidateTime(startDate, endDate);
+            List<Order> orders;
+            if (IsAdmin)
+            {
+                orders = await ApiClient.GetAsync<List<Order>>($"{BaseUri}/{OrdersUrl}?startDate={startDate}&endDate={endDate}");
+            }
+            else
+            {
+                orders = await ApiClient.GetAsync<List<Order>>($"{BaseUri}/{OrdersUrl}?id={CurrentUserId}&startDate={startDate}&endDate={endDate}");
+            }
+            return View(orders);
+        } catch (Exception ex)
         {
-            orders = await ApiClient.GetAsync<List<Order>>($"{BaseUri}/{OrdersUrl}?id={CurrentUserId}");
+            TempData["Message"] = ex.Message;
+            return RedirectToAction("Index");
         }
-        return View(orders);
+    }
+
+    private void ValidateTime(DateTime? startDate, DateTime? endDate)
+    {
+        if (startDate != null || endDate != null)
+        {
+            if (startDate != null && endDate == null)
+            {
+                endDate = startDate;
+            }
+            else if (startDate == null && endDate != null)
+            {
+                startDate = endDate;
+            }
+
+            if (DateTime.Compare((DateTime)startDate, (DateTime)endDate) > 0)
+            {
+                throw new Exception("StartDate cannot be later than EndDate");
+            }
+        }
     }
 
     public async Task<IActionResult> Detail(int id)
