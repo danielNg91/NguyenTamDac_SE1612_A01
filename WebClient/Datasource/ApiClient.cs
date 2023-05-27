@@ -8,17 +8,40 @@ namespace WebClient.Datasource;
 public class ApiClient : IApiClient
 {
     protected readonly HttpClient Client;
-    protected readonly string BaseUri;
 
     public ApiClient(IOptions<AppSettings> appSettings)
     {
         Client = new HttpClient();
-        BaseUri = appSettings.Value.BaseUrl;
     }
 
-    public async Task<T?> GetAsync<T>(string url = "")
+    public async Task<T?> GetAsync<T>(string url)
     {
-        HttpResponseMessage response = await Client.GetAsync($"{BaseUri}{url}");
+        HttpResponseMessage response = await Client.GetAsync(url);
+        return await Deserialize<T>(response);
+    }
+
+    public async Task<T?> PostAsync<T>(string url, T body)
+    {
+        var byteContent = ConvertToByteContent(body);
+        HttpResponseMessage response = await Client.PostAsync(url, byteContent);
+        return await Deserialize<T>(response);
+    }
+
+    public async Task<T?> PutAsync<T>(string url, T body)
+    {
+        var byteContent = ConvertToByteContent(body);
+        HttpResponseMessage response = await Client.PutAsync(url, byteContent);
+        return await Deserialize<T>(response);
+    }
+
+    public async Task<T?> DeleteAsync<T>(string url)
+    {
+        HttpResponseMessage response = await Client.DeleteAsync(url);
+        return await Deserialize<T>(response);
+    }
+
+    private async Task<T?> Deserialize<T>(HttpResponseMessage response)
+    {
         string strData = await response.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions
         {
@@ -27,26 +50,12 @@ public class ApiClient : IApiClient
         return System.Text.Json.JsonSerializer.Deserialize<T>(strData, options);
     }
 
-    public async Task PostAsync<T>(T body, string url = "")
+    private ByteArrayContent ConvertToByteContent<T>(T body)
     {
         var content = JsonConvert.SerializeObject(body);
         var buffer = System.Text.Encoding.UTF8.GetBytes(content);
         var byteContent = new ByteArrayContent(buffer);
         byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        await Client.PostAsync($"{BaseUri}{url}", byteContent);
-    }
-
-    public async Task PutAsync<T>(T body, string url = "")
-    {
-        var content = JsonConvert.SerializeObject(body);
-        var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-        var byteContent = new ByteArrayContent(buffer);
-        byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-        await Client.PutAsync($"{BaseUri}{url}", byteContent);
-    }
-
-    public async Task DeleteAsync<T>(string url = "")
-    {
-        await Client.DeleteAsync($"{BaseUri}{url}");
+        return byteContent;
     }
 }

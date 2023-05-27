@@ -1,23 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using WebClient.Datasource;
+using WebClient.Models;
 
 namespace WebClient.Controllers;
 
 
-public class LoginController : Controller
+public class LoginController : BaseController
 {
-    public LoginController()
-    {
-    }
+    private readonly IApiClient _apiClient;
+    public string LoginUrl { get; set; }
 
+    public LoginController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings)
+    {
+        _apiClient = apiClient;
+        LoginUrl = appSettings.Value.LoginUrl;
+    }
+    
     public IActionResult Index()
     {
         return View();
     }
 
     [HttpPost]
-    public IActionResult Login()
+    public async Task<IActionResult> Login(LoginCredentials credentials)
     {
-        return Ok("test");
+        try
+        {
+            await _apiClient.PostAsync($"{BaseUri}/{LoginUrl}", credentials);
+            return RedirectToAction("Index");
+        } catch (Exception e)
+        {
+            //throw new 
+        }
     }
 }
