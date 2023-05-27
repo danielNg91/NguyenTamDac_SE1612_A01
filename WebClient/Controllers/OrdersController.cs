@@ -64,4 +64,25 @@ public class OrdersController : BaseController
             return RedirectToAction("Update", new { id });
         }
     }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var order = await ApiClient.GetAsync<Order>($"{BaseUri}/{OrdersUrl}/{id}");
+        return View(order);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteOrder(int id)
+    {
+        try
+        {
+            await ApiClient.DeleteAsync<object>($"{BaseUri}/{OrdersUrl}/{id}");
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Delete", new { id });
+        }
+    }
 }
