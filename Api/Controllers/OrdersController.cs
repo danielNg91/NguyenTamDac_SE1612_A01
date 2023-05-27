@@ -60,7 +60,6 @@ public class OrdersController : BaseController
         return Ok(orders);
     }
 
-    [Authorize(Roles = PolicyName.CUSTOMER)]
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrder req)
     {
@@ -95,13 +94,11 @@ public class OrdersController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(int id)
     {
-        var target = await _orderRepository.FirstOrDefaultAsync(c => c.OrderId == id);
+        var target = await _orderRepository.FirstOrDefaultAsync(c => c.OrderId == id, new string[] { "OrderDetails" });
         if (target == null)
         {
             throw new NotFoundException();
         }
-        var details = await _oderDetailRepository.WhereAsync(d => d.OrderId == id, new string[] { nameof(FlowerBouquet) });
-        target.OrderDetails = details;
         return Ok(target);
     }
 
@@ -122,16 +119,46 @@ public class OrdersController : BaseController
         return StatusCode(StatusCodes.Status204NoContent);
     }
 
-    [HttpGet("{id}/order-details")]
-    public async Task<IActionResult> GetOrderDetails(int id)
+    [HttpGet("{orderId}/order-details")]
+    public async Task<IActionResult> GetOrderDetails(int orderId)
     {
-        var target = await _oderDetailRepository.FirstOrDefaultAsync(
-            c => c.OrderId == id, new string[] { nameof(FlowerBouquet) }
+        var target = await _oderDetailRepository.WhereAsync(
+            c => c.OrderId == orderId, new string[] { nameof(FlowerBouquet) }
             );
         if (target == null)
         {
             throw new NotFoundException();
         }
         return Ok(target);
+    }
+
+    [HttpGet("{orderId}/order-details/{flowerId}")]
+    public async Task<IActionResult> GetOrderDetails(int orderId, int flowerId)
+    {
+        var detail = await _oderDetailRepository.FirstOrDefaultAsync(
+            c => c.OrderId == orderId && c.FlowerBouquetId == flowerId, new string[] { nameof(FlowerBouquet) }
+            );
+        if (detail == null)
+        {
+            throw new NotFoundException();
+        }
+        return Ok(detail);
+    }
+
+    [HttpPut("{orderId}/order-details/{flowerId}")]
+    public async Task<IActionResult> GetOrderDetails(int orderId, int flowerId, UpdateOrderDetail req)
+    {
+        var detail = await _oderDetailRepository.FoundOrThrow(c => c.OrderId == orderId && c.FlowerBouquetId == flowerId, new NotFoundException());
+        var entity = Mapper.Map(req, detail);
+        await _oderDetailRepository.UpdateAsync(entity);
+        return StatusCode(StatusCodes.Status204NoContent);
+    }
+
+    [HttpDelete("{orderId}/order-details/{flowerId}")]
+    public async Task<IActionResult> DeleteOrderDetail(int orderId, int flowerId)
+    {
+        var detail = await _oderDetailRepository.FoundOrThrow(c => c.OrderId == orderId && c.FlowerBouquetId == flowerId, new NotFoundException());
+        await _oderDetailRepository.DeleteAsync(detail);
+        return StatusCode(StatusCodes.Status204NoContent);
     }
 }

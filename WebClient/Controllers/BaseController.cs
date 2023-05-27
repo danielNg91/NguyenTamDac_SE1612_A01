@@ -14,6 +14,7 @@ public class BaseController : Controller
     protected readonly string OrdersUrl;
     protected readonly string LoginUrl;
     protected readonly string RegisterUrl;
+    protected readonly string OrderDetailsUrl;
     public int CurrentUserId => GetCurrentUserId();
 
     public bool IsAdmin => IsCurrentUserAdmin();
@@ -34,6 +35,7 @@ public class BaseController : Controller
         LoginUrl = appSettings.Value.LoginUrl;
         RegisterUrl = appSettings.Value.RegisterUrl;
         OrdersUrl = appSettings.Value.OrdersUrl;
+        OrderDetailsUrl = appSettings.Value.OrderDetailsUrl;
         ApiClient = apiClient;
     }
 

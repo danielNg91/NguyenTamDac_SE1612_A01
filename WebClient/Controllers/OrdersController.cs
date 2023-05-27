@@ -27,4 +27,10 @@ public class OrdersController : BaseController
         }
         return View(orders);
     }
+
+    public async Task<IActionResult> Detail(int id)
+    {
+        var order = await ApiClient.GetAsync<Order>($"{BaseUri}/{OrdersUrl}/{id}");
+        return View(order);
+    }
 }

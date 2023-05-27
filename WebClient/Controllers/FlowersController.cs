@@ -9,14 +9,13 @@ using WebClient.Utils;
 
 namespace WebClient.Controllers;
 
-[Authorize(Roles = PolicyName.ADMIN)]
+[Authorize(Roles = $"{PolicyName.ADMIN},{PolicyName.CUSTOMER}")]
 public class FlowersController : BaseController
 {
     public FlowersController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings, apiClient)
     {
     }
 
-    [Authorize(Roles = $"{PolicyName.ADMIN},{PolicyName.CUSTOMER}")]
     public async Task<IActionResult> Index()
     {
         var flowers = await ApiClient.GetAsync<List<FlowerBouquet>>($"{BaseUri}/{FlowersUrl}");

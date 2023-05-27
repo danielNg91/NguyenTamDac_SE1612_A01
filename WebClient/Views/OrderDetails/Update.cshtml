@@ -1,0 +1,61 @@
+﻿@model WebClient.Models.UpdateOrderDetail;
+
+@{
+    ViewData["Title"] = "Update Order Detail";
+}
+
+@if (TempData["Message"] != null)
+{
+    <h3 style="color:red">@TempData["Message"]</h3>
+}
+
+<h1>Update Order Detail</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div>
+                <label asp-for="@Model.UnitPrice" class="form-label"></label>
+                <input asp-for="@Model.UnitPrice" class="form-control" readonly />
+                <span asp-validation-for="@Model.UnitPrice" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="@Model.FlowerBouquet.FlowerBouquetName" class="form-label"></label>
+                <input asp-for="@Model.FlowerBouquet.FlowerBouquetName" class="form-control" readonly />
+                <span asp-validation-for="@Model.FlowerBouquet.FlowerBouquetName" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.UnitPrice" class="form-label"></label>
+                <input asp-for="@Model.UnitPrice" class="form-control" />
+                <span asp-validation-for="@Model.UnitPrice" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.Quantity" class="form-label"></label>
+                <input asp-for="@Model.Quantity" class="form-control" />
+                <span asp-validation-for="@Model.Quantity" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.Discount" class="form-label"></label>
+                <input asp-for="@Model.Discount" class="form-control" />
+                <span asp-validation-for="@Model.Discount" class="text-danger"></span>
+            </div>
+
+            <div class="mt-1">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Detail" asp-controller="Orders" asp-route-id="@Model.OrderId">Back To Order</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

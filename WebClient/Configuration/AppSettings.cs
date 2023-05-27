@@ -11,5 +11,6 @@ public class AppSettings
     public string OrdersUrl { get; set; }
     public string CategoriesUrl { get; set; }
     public string SuppliersUrl { get; set; }
+    public string OrderDetailsUrl { get; set; }
     public AdminAccount AdminAccount { get; set; }
 }
