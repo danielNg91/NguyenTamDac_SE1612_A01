@@ -7,16 +7,12 @@ namespace Api.Models;
 public class CreateFlowerBouquet : IMapTo<FlowerBouquet>
 {
     [Required]
-    [Range(1, int.MaxValue)]
-    public int FlowerBouquetId { get; set; }
-
-    [Required]
     public int CategoryId { get; set; }
 
-    [Required]
+    [Required, MaxLength(40)]
     public string FlowerBouquetName { get; set; }
 
-    [Required]
+    [Required, MaxLength(220)]
     public string Description { get; set; }
 
     [Required]
@@ -26,7 +22,8 @@ public class CreateFlowerBouquet : IMapTo<FlowerBouquet>
     [Required]
     [Range(0, int.MaxValue)]
     public int UnitsInStock { get; set; }
-
+    
+    [Range(0, 255)]
     public byte? FlowerBouquetStatus { get; set; }
     public int? SupplierId { get; set; }
 

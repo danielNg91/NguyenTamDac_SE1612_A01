@@ -12,11 +12,9 @@ namespace WebClient.Controllers;
 
 public class LoginController : BaseController
 {
-    private string _loginUrl { get; set; }
 
     public LoginController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings, apiClient)
     {
-        _loginUrl = appSettings.Value.LoginUrl;
     }
 
     public IActionResult Index()
@@ -29,7 +27,7 @@ public class LoginController : BaseController
     {
         try
         {
-            var response = await ApiClient.PostAsync<LoginResponse, LoginCredentials>($"{BaseUri}/{_loginUrl}", credentials);
+            var response = await ApiClient.PostAsync<LoginResponse, LoginCredentials>($"{BaseUri}/{LoginUrl}", credentials);
             await SetIdentity(response.CustomerId.ToString(), response.Email, response.Role);
             return RedirectToAction("Index", "Home");
         }

@@ -36,17 +36,18 @@ public class FlowerBouquetsController : BaseController
     [HttpPost]
     public async Task<IActionResult> CreateFlowerBouquet([FromBody] CreateFlowerBouquet req)
     {
-        var target = await _flowerRepository.FirstOrDefaultAsync(f => f.FlowerBouquetId == req.FlowerBouquetId);
-        if (target != null)
-        {
-            throw new BadRequestException("Entity existed");
-        }
         FlowerBouquet entity = Mapper.Map(req, new FlowerBouquet());
+        entity.FlowerBouquetId = await GetId();
         await ValidateNavigations(entity);
         await _flowerRepository.CreateAsync(entity);
         return StatusCode(StatusCodes.Status201Created);
     }
 
+    private async Task<int> GetId()
+    {
+        var user = (await _flowerRepository.ToListAsync()).OrderByDescending(u => u.FlowerBouquetId).FirstOrDefault();
+        return user == null ? 1 : (user.FlowerBouquetId + 1);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFlowerBouquet(int id)

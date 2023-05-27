@@ -11,16 +11,13 @@ namespace WebClient.Controllers;
 [Authorize(Roles = PolicyName.ADMIN)]
 public class CustomersController : BaseController
 {
-    private string _customersUrl { get; set; }
-
     public CustomersController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings, apiClient)
     {
-        _customersUrl = appSettings.Value.CustomersUrl;
     }
 
     public async Task<IActionResult> Index()
     {
-        var customers = await ApiClient.GetAsync<List<Customer>>($"{BaseUri}/{_customersUrl}");
+        var customers = await ApiClient.GetAsync<List<Customer>>($"{BaseUri}/{CustomersUrl}");
         return View(customers);
     }
 
@@ -34,7 +31,7 @@ public class CustomersController : BaseController
     {
         try
         {
-            await ApiClient.PostAsync<object, CreateCustomer>($"{BaseUri}/{_customersUrl}", createCustomer);
+            await ApiClient.PostAsync<object, CreateCustomer>($"{BaseUri}/{CustomersUrl}", createCustomer);
             return RedirectToAction("Index");
         }
         catch
@@ -46,13 +43,13 @@ public class CustomersController : BaseController
 
     public async Task<IActionResult> Detail(int id)
     {
-        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{CustomersUrl}/{id}");
         return View(customer);
     }
 
     public async Task<IActionResult> Update(int id)
     {
-        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{CustomersUrl}/{id}");
         UpdateCustomer model = new UpdateCustomer
         {
             Email = customer.Email,
@@ -70,7 +67,7 @@ public class CustomersController : BaseController
     {
         try
         {
-            await ApiClient.PutAsync<object, UpdateCustomer>($"{BaseUri}/{_customersUrl}/{id}", updateCustomer);
+            await ApiClient.PutAsync<object, UpdateCustomer>($"{BaseUri}/{CustomersUrl}/{id}", updateCustomer);
             return RedirectToAction("Index");
         }
         catch
@@ -82,7 +79,7 @@ public class CustomersController : BaseController
 
     public async Task<IActionResult> Delete(int id)
     {
-        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{CustomersUrl}/{id}");
         return View(customer);
     }
 
@@ -91,7 +88,7 @@ public class CustomersController : BaseController
     {
         try
         {
-            await ApiClient.DeleteAsync<object>($"{BaseUri}/{_customersUrl}/{id}");
+            await ApiClient.DeleteAsync<object>($"{BaseUri}/{CustomersUrl}/{id}");
             return RedirectToAction("Index");
         }
         catch

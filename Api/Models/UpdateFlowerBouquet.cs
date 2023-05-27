@@ -6,8 +6,12 @@ namespace Api.Models;
 
 public class UpdateFlowerBouquet : IMapTo<FlowerBouquet>
 {
+    public int? CategoryId { get; set; }
+    
+    [MaxLength(40)]
     public string? FlowerBouquetName { get; set; }
 
+    [MaxLength(220)]
     public string? Description { get; set; }
 
     [Range(0, (double)decimal.MaxValue)]

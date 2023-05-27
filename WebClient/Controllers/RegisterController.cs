@@ -6,11 +6,9 @@ using WebClient.Models;
 namespace WebClient.Controllers;
 public class RegisterController : BaseController
 {
-    private string _registerUrl { get; set; }
 
     public RegisterController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings, apiClient)
     {
-        _registerUrl = appSettings.Value.RegisterUrl;
     }
 
     public IActionResult Index()
@@ -23,7 +21,7 @@ public class RegisterController : BaseController
     {
         try
         {
-            await ApiClient.PostAsync<string, RegisterAccount>($"{BaseUri}/{_registerUrl}", registerAccount);
+            await ApiClient.PostAsync<string, RegisterAccount>($"{BaseUri}/{RegisterUrl}", registerAccount);
             return RedirectToAction("Index", "Login");
         }
         catch

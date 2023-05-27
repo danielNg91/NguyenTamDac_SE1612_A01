@@ -9,5 +9,7 @@ public class AppSettings
     public string CustomersUrl { get; set; }
     public string FlowersUrl { get; set; }
     public string OrdersUrl { get; set; }
+    public string CategoriesUrl { get; set; }
+    public string SuppliersUrl { get; set; }
     public AdminAccount AdminAccount { get; set; }
 }
