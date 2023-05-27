@@ -1,5 +1,77 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@model List<BusinessObjects.Customer>;
+
+
 @{
+    ViewData["Title"] = "Customer page";
 }
+
+<h1>Customer</h1>
+<hr />
+
+@*<div>
+    <form method="get">
+        <input type="text" name="searchKey" value="@Model.SearchKey" />
+        <select name="searchOpt">
+            <option value="name">Name</option>
+            <option value="skills">Skills</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+</div>*@
+
+<div>
+    <a asp-action="Create">Create New</a>
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th> CustomerId </th>
+                <th> Email </th>
+                <th> CustomerName </th>
+                <th> City </th>
+                <th> Country </th>
+                <th> Password </th>
+                <th> Birthday </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.CustomerId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.City)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Country)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Password)
+                    </td>                    
+                    <td>
+                        @Html.DisplayFor(model => item.Birthday)
+                    </td>
+                    <td>
+                        <a asp-action="Detail" asp-route-id="@item.CustomerId">Detail</a>
+                        <a asp-action="Update" asp-route-id="@item.CustomerId">Update</a>
+                        <a asp-action="Delete" asp-route-id="@item.CustomerId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

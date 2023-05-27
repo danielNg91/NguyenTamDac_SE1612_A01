@@ -51,6 +51,6 @@ public class LoginController : BaseController
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties { IsPersistent = true });
+            new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties { IsPersistent = false });
     }
 }
