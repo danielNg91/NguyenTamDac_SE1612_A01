@@ -8,6 +8,7 @@ using Repository;
 
 namespace Api.Controllers;
 
+[Route("api/v1/flower-bouquets")]
 public class FlowerBouquetsController : BaseController
 {
     private readonly IRepository<FlowerBouquet> _flowerRepository;

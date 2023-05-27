@@ -1,0 +1,68 @@
+﻿@model List<BusinessObjects.FlowerBouquet>;
+
+
+@{
+    ViewData["Title"] = "Flowers page";
+}
+
+<h1>Flowers</h1>
+<hr />
+
+<div>
+    <a asp-action="Create">Create New</a>
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th> FlowerBouquetId </th>
+                <th> CategoryId </th>
+                <th> FlowerBouquetName </th>
+                <th> Description </th>
+                <th> UnitPrice </th>
+                <th> UnitsInStock </th>
+                <th> FlowerBouquetStatus </th>
+                <th> SupplierId </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.FlowerBouquetId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.CategoryId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.FlowerBouquetName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.UnitPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.UnitsInStock)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.FlowerBouquetStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.SupplierId)
+                    </td>
+                    <td>
+                        <a asp-action="Order" asp-route-id="@item.FlowerBouquetId">Order</a>
+                        <a asp-action="Detail" asp-route-id="@item.FlowerBouquetId">Detail</a>
+                        <a asp-action="Update" asp-route-id="@item.FlowerBouquetId">Update</a>
+                        <a asp-action="Delete" asp-route-id="@item.FlowerBouquetId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
