@@ -45,6 +45,10 @@ public class ApiClient : IApiClient
     {
         response.EnsureSuccessStatusCode();
         string strData = await response.Content.ReadAsStringAsync();
+        if (string.IsNullOrEmpty(strData))
+        {
+            return default(M);
+        }
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,

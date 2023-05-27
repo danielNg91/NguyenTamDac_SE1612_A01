@@ -35,12 +35,48 @@ public class CustomersController : BaseController
         try
         {
             await ApiClient.PostAsync<string, CreateCustomer>($"{BaseUri}/{_customersUrl}", createCustomer);
-            return RedirectToAction("Index", "Customer");
+            return RedirectToAction("Index");
         }
         catch
         {
             TempData["Message"] = "Account already exist";
+            return RedirectToAction("Create");
+        }
+    }
+
+    public async Task<IActionResult> Detail(int id)
+    {
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        return View(customer);
+    }
+
+    public async Task<IActionResult> Update(int id)
+    {
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        UpdateCustomer model = new UpdateCustomer
+        {
+            Email = customer.Email,
+            CustomerName = customer.CustomerName,
+            City = customer.City,
+            Country = customer.Country,
+            Password = customer.Password,
+            Birthday = customer.Birthday,
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(int id, UpdateCustomer updateCustomer)
+    {
+        try
+        {
+            await ApiClient.PutAsync<string, UpdateCustomer>($"{BaseUri}/{_customersUrl}/{id}", updateCustomer);
             return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Update");
         }
     }
 }
