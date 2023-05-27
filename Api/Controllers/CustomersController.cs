@@ -34,8 +34,15 @@ public class CustomersController : BaseController
     {
         await ValidateRegisterFields(req);
         Customer entity = Mapper.Map(req, new Customer());
+        entity.CustomerId = await GetUserId();
         await _customerRepository.CreateAsync(entity);
         return StatusCode(StatusCodes.Status201Created);
+    }
+
+    private async Task<int> GetUserId()
+    {
+        var user = (await _customerRepository.ToListAsync()).OrderByDescending(u => u.CustomerId).FirstOrDefault();
+        return user == null ? 1 : (user.CustomerId + 1);
     }
 
     private async Task ValidateRegisterFields(CreateCustomer req)

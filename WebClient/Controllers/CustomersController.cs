@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using WebClient.Datasource;
+using WebClient.Models;
 using WebClient.Utils;
 
 namespace WebClient.Controllers;
@@ -21,5 +22,25 @@ public class CustomersController : BaseController
     {
         var customers = await ApiClient.GetAsync<List<Customer>>($"{BaseUri}/{_customersUrl}");
         return View(customers);
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateCustomer createCustomer)
+    {
+        try
+        {
+            await ApiClient.PostAsync<string, CreateCustomer>($"{BaseUri}/{_customersUrl}", createCustomer);
+            return RedirectToAction("Index", "Customer");
+        }
+        catch
+        {
+            TempData["Message"] = "Account already exist";
+            return RedirectToAction("Index");
+        }
     }
 }
