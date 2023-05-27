@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using WebClient.Datasource;
+using WebClient.Models;
 using WebClient.Utils;
 
 namespace WebClient.Controllers;
@@ -32,5 +33,35 @@ public class OrdersController : BaseController
     {
         var order = await ApiClient.GetAsync<Order>($"{BaseUri}/{OrdersUrl}/{id}");
         return View(order);
+    }
+
+    public async Task<IActionResult> Update(int id)
+    {
+        var order = await ApiClient.GetAsync<Order>($"{BaseUri}/{OrdersUrl}/{id}");
+        UpdateOrder model = new UpdateOrder
+        {
+            OrderId = order.OrderId,
+            CustomerId = (int)order.CustomerId,
+            OrderDate = order.OrderDate,
+            ShippedDate = order.ShippedDate,
+            Total = order.Total,
+            OrderStatus = order.OrderStatus,
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(int id, UpdateOrder req)
+    {
+        try
+        {
+            await ApiClient.PutAsync<object, UpdateOrder>($"{BaseUri}/{OrdersUrl}/{id}", req);
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Update", new { id });
+        }
     }
 }

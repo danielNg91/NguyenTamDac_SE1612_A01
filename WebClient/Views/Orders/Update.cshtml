@@ -1,0 +1,67 @@
+﻿@model WebClient.Models.UpdateOrder;
+
+@{
+    ViewData["Title"] = "Update Order";
+}
+
+@if (TempData["Message"] != null)
+{
+    <h3 style="color:red">@TempData["Message"]</h3>
+}
+
+<h1>Update Order</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div>
+                <label asp-for="@Model.OrderId" class="form-label"></label>
+                <input asp-for="@Model.OrderId" class="form-control" readonly />
+                <span asp-validation-for="@Model.OrderId" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.CustomerId" class="form-label"></label>
+                <input asp-for="@Model.CustomerId" class="form-control" readonly />
+                <span asp-validation-for="@Model.CustomerId" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.OrderDate" class="form-label"></label>
+                <input asp-for="@Model.OrderDate" class="form-control" />
+                <span asp-validation-for="@Model.OrderDate" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="@Model.ShippedDate" class="form-label"></label>
+                <input asp-for="@Model.ShippedDate" class="form-control" />
+                <span asp-validation-for="@Model.ShippedDate" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.Total" class="form-label"></label>
+                <input asp-for="@Model.Total" class="form-control" />
+                <span asp-validation-for="@Model.Total" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.OrderStatus" class="form-label"></label>
+                <input asp-for="@Model.OrderStatus" class="form-control" />
+                <span asp-validation-for="@Model.OrderStatus" class="text-danger"></span>
+            </div>
+
+            <div class="mt-1">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back To List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
