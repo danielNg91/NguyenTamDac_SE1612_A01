@@ -20,6 +20,7 @@ public class UpdateFlowerBouquet : IMapTo<FlowerBouquet>
     [Range(0, int.MaxValue)]
     public int? UnitsInStock { get; set; }
 
+    [Range(0, 255)]
     public byte? FlowerBouquetStatus { get; set; }
     public int? SupplierId { get; set; }
 

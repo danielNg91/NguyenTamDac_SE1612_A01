@@ -25,7 +25,6 @@ public class FlowersController : BaseController
 
     public async Task<IActionResult> Create()
     {
-
         ViewData["Catgories"] = await GetCategoriesList();
         ViewData["Suppliers"] = await GetSuppliersList();
         return View();
@@ -73,5 +72,38 @@ public class FlowersController : BaseController
     {
         var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
         return View(flower);
+    }
+
+    public async Task<IActionResult> Update(int id)
+    {
+        var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
+        UpdateFlowerBouquet model = new UpdateFlowerBouquet
+        {
+            CategoryId = flower.CategoryId,
+            FlowerBouquetName = flower.FlowerBouquetName,
+            Description = flower.Description,
+            UnitPrice = flower.UnitPrice,
+            UnitsInStock = flower.UnitsInStock,
+            FlowerBouquetStatus = flower.FlowerBouquetStatus,
+            SupplierId = flower.SupplierId,
+        };
+        ViewData["Catgories"] = await GetCategoriesList();
+        ViewData["Suppliers"] = await GetSuppliersList();
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(int id, UpdateFlowerBouquet req)
+    {
+        try
+        {
+            await ApiClient.PutAsync<object, UpdateFlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}", req);
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Update");
+        }
     }
 }
