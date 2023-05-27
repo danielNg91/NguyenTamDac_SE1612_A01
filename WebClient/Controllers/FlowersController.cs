@@ -68,4 +68,10 @@ public class FlowersController : BaseController
             return RedirectToAction("Create");
         }
     }
+
+    public async Task<IActionResult> Detail(int id)
+    {
+        var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
+        return View(flower);
+    }
 }
