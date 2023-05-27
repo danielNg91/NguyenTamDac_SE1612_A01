@@ -1,9 +1,11 @@
 ﻿using BusinessObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using WebClient.Datasource;
 using WebClient.Models;
+using WebClient.Utils;
 
 namespace WebClient.Controllers;
 
@@ -72,6 +74,33 @@ public class OrderDetailsController : BaseController
         {
             TempData["Message"] = "Server Error";
             return RedirectToAction("Delete", new { orderId, flowerId });
+        }
+    }
+
+    [Authorize(Roles = PolicyName.CUSTOMER)]
+    public async Task<IActionResult> Create(int orderId)
+    {
+        ViewData["Flowers"] = await GetFlowersList();
+        var model = new CreateOrderDetail
+        {
+            OrderId = orderId,
+        };
+        return View(model);
+    }
+
+    [Authorize(Roles = PolicyName.CUSTOMER)]
+    [HttpPost]
+    public async Task<IActionResult> Create(int orderId, CreateOrderDetail req)
+    {
+        try
+        {
+            await ApiClient.PostAsync<object, CreateOrderDetail>($"{BaseUri}/{OrdersUrl}/{orderId}/{OrderDetailsUrl}", req);
+            return RedirectToAction("Detail", "Orders", new { id = orderId });
+        }
+        catch
+        {
+            TempData["Message"] = "Flower has been in card, please add another plant";
+            return RedirectToAction("Create", new { orderId });
         }
     }
 }

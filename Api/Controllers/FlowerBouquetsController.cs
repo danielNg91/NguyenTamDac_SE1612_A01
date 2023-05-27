@@ -45,8 +45,8 @@ public class FlowerBouquetsController : BaseController
 
     private async Task<int> GetId()
     {
-        var user = (await _flowerRepository.ToListAsync()).OrderByDescending(u => u.FlowerBouquetId).FirstOrDefault();
-        return user == null ? 1 : (user.FlowerBouquetId + 1);
+        var flower = (await _flowerRepository.ToListAsync()).OrderByDescending(u => u.FlowerBouquetId).FirstOrDefault();
+        return flower == null ? 1 : (flower.FlowerBouquetId + 1);
     }
 
     [HttpGet("{id}")]

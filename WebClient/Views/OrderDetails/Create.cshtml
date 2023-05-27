@@ -1,0 +1,55 @@
+﻿@model WebClient.Models.CreateOrderDetail
+
+@{
+    ViewData["Title"] = "Create Order Detail";
+}
+
+@if (TempData["Message"] != null)
+{
+    <h3 style="color:red">@TempData["Message"]</h3>
+}
+
+<h1>Order Detail</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div>
+                <label asp-for="@Model.FlowerBouquetId" class="form-label"></label>
+                <select asp-for="@Model.FlowerBouquetId" class="form-control" asp-items="ViewBag.Flowers"></select>
+            </div>
+
+            <div>
+                <label asp-for="@Model.UnitPrice" class="form-label"></label>
+                <input asp-for="@Model.UnitPrice" class="form-control" />
+                <span asp-validation-for="@Model.UnitPrice" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.Quantity" class="form-label"></label>
+                <input asp-for="@Model.Quantity" class="form-control" />
+                <span asp-validation-for="@Model.Quantity" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label asp-for="@Model.Discount" class="form-label"></label>
+                <input asp-for="@Model.Discount" class="form-control" />
+                <span asp-validation-for="@Model.Discount" class="text-danger"></span>
+            </div>
+
+            <div class="mt-1">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Detail" asp-controller="Orders" asp-route-id="@Model.OrderId">Back To Order</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

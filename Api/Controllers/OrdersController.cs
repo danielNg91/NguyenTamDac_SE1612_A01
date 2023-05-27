@@ -13,15 +13,18 @@ namespace Api.Controllers;
 public class OrdersController : BaseController
 {
     private readonly IRepository<Order> _orderRepository;
+    private readonly IRepository<Customer> _customerRepository;
     private readonly IRepository<OrderDetail> _oderDetailRepository;
     private readonly IRepository<FlowerBouquet> _flowerRepository;
 
     public OrdersController(
         IRepository<Order> orderRepository, 
+        IRepository<Customer> customerRepository,
         IRepository<OrderDetail> oderDetailRepository, 
         IRepository<FlowerBouquet> flowerRepository)
     {
         _orderRepository = orderRepository;
+        _customerRepository = customerRepository;
         _oderDetailRepository = oderDetailRepository;
         _flowerRepository = flowerRepository;
     }
@@ -63,32 +66,17 @@ public class OrdersController : BaseController
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrder req)
     {
-        var target = await _orderRepository.FirstOrDefaultAsync(c => c.OrderId == req.OrderId);
-        if (target != null)
-        {
-            throw new BadRequestException("Entity existed");
-        }
+        var user = await _customerRepository.FoundOrThrow(c => c.CustomerId == req.CustomerId, new BadRequestException("Customer not exist"));
         Order entity = Mapper.Map(req, new Order());
-        entity.CustomerId = CurrentUserID;
-        List<OrderDetail> orderDetails = new List<OrderDetail>();
-        foreach(var flowerReq in req.Flowers)
-        {
-            var flower = await _flowerRepository.FoundOrThrow(
-                f => f.FlowerBouquetId == flowerReq.FlowerBouquetId, new BadRequestException("FlowerId not found")
-                );
-            orderDetails.Add(new OrderDetail
-            {
-                FlowerBouquetId = flower.FlowerBouquetId,
-                OrderId = req.OrderId,
-                Discount = 0,
-                Quantity = flowerReq.Quantity,
-                UnitPrice = flower.UnitPrice,
-            });
-        }
-
+        entity.OrderId = await GetId();
         await _orderRepository.CreateAsync(entity);
-        await _oderDetailRepository.CreateAsync(orderDetails);
         return StatusCode(StatusCodes.Status201Created);
+    }
+
+    private async Task<int> GetId()
+    {
+        var order = (await _orderRepository.ToListAsync()).OrderByDescending(u => u.OrderId).FirstOrDefault();
+        return order == null ? 1 : (order.OrderId + 1);
     }
 
     [HttpGet("{id}")]
@@ -130,6 +118,16 @@ public class OrdersController : BaseController
             throw new NotFoundException();
         }
         return Ok(target);
+    }
+
+    [HttpPost("{orderId}/order-details")]
+    public async Task<IActionResult> CreateOrderDetails(int orderId, CreateOrderDetail orderDetail)
+    {
+        var order = await _orderRepository.FoundOrThrow(c => c.OrderId == orderId, new BadRequestException("Order not exist"));
+        OrderDetail entity = Mapper.Map(orderDetail, new OrderDetail());
+        entity.OrderId = orderId;
+        await _oderDetailRepository.CreateAsync(entity);
+        return StatusCode(StatusCodes.Status201Created);
     }
 
     [HttpGet("{orderId}/order-details/{flowerId}")]

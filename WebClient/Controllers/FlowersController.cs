@@ -9,7 +9,6 @@ using WebClient.Utils;
 
 namespace WebClient.Controllers;
 
-[Authorize(Roles = $"{PolicyName.ADMIN},{PolicyName.CUSTOMER}")]
 public class FlowersController : BaseController
 {
     public FlowersController(IOptions<AppSettings> appSettings, IApiClient apiClient) : base(appSettings, apiClient)
@@ -22,6 +21,7 @@ public class FlowersController : BaseController
         return View(flowers);
     }
 
+    [Authorize(Roles = PolicyName.ADMIN)]
     public async Task<IActionResult> Create()
     {
         ViewData["Catgories"] = await GetCategoriesList();
@@ -51,7 +51,7 @@ public class FlowersController : BaseController
         return selectListSuppliers;
     }
 
-
+    [Authorize(Roles = PolicyName.ADMIN)]
     [HttpPost]
     public async Task<IActionResult> Create(CreateFlowerBouquet req)
     {
@@ -73,6 +73,7 @@ public class FlowersController : BaseController
         return View(flower);
     }
 
+    [Authorize(Roles = PolicyName.ADMIN)]
     public async Task<IActionResult> Update(int id)
     {
         var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
@@ -91,6 +92,7 @@ public class FlowersController : BaseController
         return View(model);
     }
 
+    [Authorize(Roles = PolicyName.ADMIN)]
     [HttpPost]
     public async Task<IActionResult> Update(int id, UpdateFlowerBouquet req)
     {
@@ -106,12 +108,14 @@ public class FlowersController : BaseController
         }
     }
 
+    [Authorize(Roles = PolicyName.ADMIN)]
     public async Task<IActionResult> Delete(int id)
     {
         var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
         return View(flower);
     }
 
+    [Authorize(Roles = PolicyName.ADMIN)]
     [HttpPost]
     public async Task<IActionResult> DeleteFlower(int id)
     {

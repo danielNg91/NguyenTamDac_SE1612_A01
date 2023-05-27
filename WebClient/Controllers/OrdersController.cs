@@ -63,6 +63,29 @@ public class OrdersController : BaseController
         return View(order);
     }
 
+    [Authorize(Roles = PolicyName.CUSTOMER)]
+    public async Task<IActionResult> Create()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = PolicyName.CUSTOMER)]
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateOrder req)
+    {
+        try
+        {
+            req.CustomerId = CurrentUserId;
+            await ApiClient.PostAsync<object, CreateOrder>($"{BaseUri}/{OrdersUrl}", req);
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Create");
+        }
+    }
+
     public async Task<IActionResult> Update(int id)
     {
         var order = await ApiClient.GetAsync<Order>($"{BaseUri}/{OrdersUrl}/{id}");
