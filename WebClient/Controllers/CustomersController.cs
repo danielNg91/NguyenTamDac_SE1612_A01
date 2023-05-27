@@ -73,7 +73,7 @@ public class CustomersController : BaseController
         catch
         {
             TempData["Message"] = "Server Error";
-            return RedirectToAction("Update");
+            return RedirectToAction("Update", new { id });
         }
     }
 
@@ -94,7 +94,7 @@ public class CustomersController : BaseController
         catch
         {
             TempData["Message"] = "Server Error";
-            return RedirectToAction("Delete");
+            return RedirectToAction("Delete", new { id });
         }
     }
 }

@@ -103,7 +103,28 @@ public class FlowersController : BaseController
         catch
         {
             TempData["Message"] = "Server Error";
-            return RedirectToAction("Update");
+            return RedirectToAction("Update", new { id });
+        }
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var flower = await ApiClient.GetAsync<FlowerBouquet>($"{BaseUri}/{FlowersUrl}/{id}");
+        return View(flower);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteFlower(int id)
+    {
+        try
+        {
+            await ApiClient.DeleteAsync<object>($"{BaseUri}/{FlowersUrl}/{id}");
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Flower has ordered, cannot delete";
+            return RedirectToAction("Delete", new { id });
         }
     }
 }

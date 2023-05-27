@@ -3,6 +3,11 @@
     ViewData["Title"] = "Delete";
 }
 
+@if (TempData["Message"] != null)
+{
+    <h3 style="color:red">@TempData["Message"]</h3>
+}
+
 <h1>Delete</h1>
 <hr />
 <h3 class="text-warning">Are you sure to delete this author?</h3>
