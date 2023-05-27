@@ -35,7 +35,7 @@ public class ApiClient : IApiClient
         return await Deserialize<M>(response);
     }
 
-    public async Task<M?> DeleteAsync<M, T>(string url)
+    public async Task<M?> DeleteAsync<M>(string url)
     {
         HttpResponseMessage response = await Client.DeleteAsync(url);
         return await Deserialize<M>(response);

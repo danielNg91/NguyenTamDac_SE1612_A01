@@ -34,7 +34,7 @@ public class CustomersController : BaseController
     {
         try
         {
-            await ApiClient.PostAsync<string, CreateCustomer>($"{BaseUri}/{_customersUrl}", createCustomer);
+            await ApiClient.PostAsync<object, CreateCustomer>($"{BaseUri}/{_customersUrl}", createCustomer);
             return RedirectToAction("Index");
         }
         catch
@@ -70,13 +70,34 @@ public class CustomersController : BaseController
     {
         try
         {
-            await ApiClient.PutAsync<string, UpdateCustomer>($"{BaseUri}/{_customersUrl}/{id}", updateCustomer);
+            await ApiClient.PutAsync<object, UpdateCustomer>($"{BaseUri}/{_customersUrl}/{id}", updateCustomer);
             return RedirectToAction("Index");
         }
         catch
         {
             TempData["Message"] = "Server Error";
             return RedirectToAction("Update");
+        }
+    }
+
+    public async Task<IActionResult> Delete(int id)
+    {
+        var customer = await ApiClient.GetAsync<Customer>($"{BaseUri}/{_customersUrl}/{id}");
+        return View(customer);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteCustomer(int id)
+    {
+        try
+        {
+            await ApiClient.DeleteAsync<object>($"{BaseUri}/{_customersUrl}/{id}");
+            return RedirectToAction("Index");
+        }
+        catch
+        {
+            TempData["Message"] = "Server Error";
+            return RedirectToAction("Delete");
         }
     }
 }
