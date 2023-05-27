@@ -1,0 +1,59 @@
+﻿@model List<BusinessObjects.Order>;
+
+
+@{
+    ViewData["Title"] = "Orders page";
+}
+
+<h1>Orders</h1>
+<hr />
+
+<div>
+    <a asp-action="Create">Create New</a>
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th> OrderId </th>
+                <th> CustomerId </th>
+                <th> OrderDate </th>
+                <th> ShippedDate </th>
+                <th> Total </th>
+                <th> OrderStatus </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.OrderId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.CustomerId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.OrderDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.ShippedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Total)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.OrderStatus)
+                    </td>
+                    <td>
+                        <a asp-action="Detail" asp-route-id="@item.OrderId">Detail</a>
+                        <a asp-action="Update" asp-route-id="@item.OrderId">Update</a>
+                        <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
