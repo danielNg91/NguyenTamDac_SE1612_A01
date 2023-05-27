@@ -2,8 +2,8 @@
 
 public interface IApiClient
 {
-    Task<T?> GetAsync<T>(string url);
-    Task<T?> PostAsync<T>(string url, T body);
-    Task<T?> PutAsync<T>(string url, T body);
-    Task<T?> DeleteAsync<T>(string url);
+    Task<M?> GetAsync<M>(string url);
+    Task<M?> PostAsync<M, T>(string url, T body);
+    Task<M?> PutAsync<M, T>(string url, T body);
+    Task<M?> DeleteAsync<M, T>(string url);
 }

@@ -24,8 +24,18 @@ services.Configure<AppSettings>(configuration.GetSection(nameof(AppSettings)));
 
 services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-services.AddAppAuthentication();
-services.AddAppAuthorization();
+//services.AddAppAuthentication();
+//services.AddAppAuthorization();
+
+services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 services.AddDbContext<FUFlowerBouquetManagementContext>(options =>
 {
@@ -49,8 +59,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true });
+app.UseCors("CorsPolicy");
 
+app.UseApiResponseAndExceptionWrapper(new AutoWrapperOptions { IsApiOnly = false, ShowIsErrorFlagForSuccessfulResponse = true });
 
 app.UseHttpsRedirection();
 

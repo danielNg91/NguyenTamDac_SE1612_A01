@@ -10,7 +10,6 @@ using Repository;
 namespace Api.Controllers;
 
 
-[Authorize(Roles = PolicyName.ADMIN)]
 [Route("api/v1/customers")]
 public class CustomersController : BaseController
 {
@@ -50,12 +49,6 @@ public class CustomersController : BaseController
         if (isEmailExisted)
         {
             throw new BadRequestException("Email already existed");
-        }
-
-        var isIdExisted = (await _customerRepository.FirstOrDefaultAsync(u => u.CustomerId == req.CustomerId)) != null;
-        if (isIdExisted)
-        {
-            throw new BadRequestException("UserId already existed");
         }
     }
 

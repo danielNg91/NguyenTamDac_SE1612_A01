@@ -1,8 +1,7 @@
-﻿using Api.Utils;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using WebClient.Utils;
 
-namespace Api;
+namespace WebClient;
 
 public static class AuthConfiguration
 {
@@ -29,7 +28,8 @@ public static class AuthConfiguration
         {
             options.ExpireTimeSpan = System.TimeSpan.FromDays(1);
             options.Cookie.HttpOnly = true;
-            options.EventsType = typeof(AuthenticationEvent);
+            options.LoginPath = "/Login/Index";
+            options.AccessDeniedPath = "/Home/Error403";
         });
         return services;
     }    

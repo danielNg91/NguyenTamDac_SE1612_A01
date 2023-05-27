@@ -8,8 +8,6 @@ using Repository;
 
 namespace Api.Controllers;
 
-[Authorize(Roles = PolicyName.ADMIN)]
-[Route("api/v1/flower-bouquets")]
 public class FlowerBouquetsController : BaseController
 {
     private readonly IRepository<FlowerBouquet> _flowerRepository;

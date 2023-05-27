@@ -6,23 +6,19 @@ namespace Api.Models;
 
 public class CreateCustomer : IMapTo<Customer>
 {
-    [Required]
-    [Range(1, int.MaxValue)]
-    public int CustomerId { get; set; }
-    
-    [Required, EmailAddress]
+    [Required, EmailAddress, MaxLength(100)]
     public string Email { get; set; }
 
-    [Required]
+    [Required, MaxLength(180)]
     public string CustomerName { get; set; }
 
-    [Required]
+    [Required, MaxLength(15)]
     public string City { get; set; }
 
-    [Required]
+    [Required, MaxLength(15)]
     public string Country { get; set; }
 
-    [Required]
+    [Required, MaxLength(30)]
     public string Password { get; set; }
 
     public DateTime? Birthday { get; set; }

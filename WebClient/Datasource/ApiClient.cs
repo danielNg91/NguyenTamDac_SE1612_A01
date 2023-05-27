@@ -12,42 +12,45 @@ public class ApiClient : IApiClient
     public ApiClient(IOptions<AppSettings> appSettings)
     {
         Client = new HttpClient();
+        Client.DefaultRequestHeaders.ConnectionClose = true;
     }
 
-    public async Task<T?> GetAsync<T>(string url)
+    public async Task<M?> GetAsync<M>(string url)
     {
         HttpResponseMessage response = await Client.GetAsync(url);
-        return await Deserialize<T>(response);
+        return await Deserialize<M>(response);
     }
 
-    public async Task<T?> PostAsync<T>(string url, T body)
+    public async Task<M?> PostAsync<M, T>(string url, T body)
     {
-        var byteContent = ConvertToByteContent(body);
+        var byteContent = ConvertToByteContent<T>(body);
         HttpResponseMessage response = await Client.PostAsync(url, byteContent);
-        return await Deserialize<T>(response);
+        return await Deserialize<M>(response);
     }
 
-    public async Task<T?> PutAsync<T>(string url, T body)
+    public async Task<M?> PutAsync<M, T>(string url, T body)
     {
-        var byteContent = ConvertToByteContent(body);
+        var byteContent = ConvertToByteContent<T>(body);
         HttpResponseMessage response = await Client.PutAsync(url, byteContent);
-        return await Deserialize<T>(response);
+        return await Deserialize<M>(response);
     }
 
-    public async Task<T?> DeleteAsync<T>(string url)
+    public async Task<M?> DeleteAsync<M, T>(string url)
     {
         HttpResponseMessage response = await Client.DeleteAsync(url);
-        return await Deserialize<T>(response);
+        return await Deserialize<M>(response);
     }
 
-    private async Task<T?> Deserialize<T>(HttpResponseMessage response)
+    private async Task<M?> Deserialize<M>(HttpResponseMessage response)
     {
+        response.EnsureSuccessStatusCode();
         string strData = await response.Content.ReadAsStringAsync();
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
         };
-        return System.Text.Json.JsonSerializer.Deserialize<T>(strData, options);
+        var wrapResponse = System.Text.Json.JsonSerializer.Deserialize<WrapResponse<M>>(strData, options);
+        return wrapResponse.Result;
     }
 
     private ByteArrayContent ConvertToByteContent<T>(T body)

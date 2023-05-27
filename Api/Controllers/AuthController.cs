@@ -30,15 +30,23 @@ public class AuthController : BaseController
         if (credentials.Email.Equals(_appSettings.Value.AdminAccount.Email) &&
             credentials.Password.Equals(_appSettings.Value.AdminAccount.Password))
         {
-            await SetIdentity("9999", _appSettings.Value.AdminAccount.Email, PolicyName.ADMIN);
-            return Ok();
+            var admin = new LoginResponse
+            {
+                CustomerId = 999,
+                Email = credentials.Email,
+                Role = PolicyName.ADMIN
+            };
+            //await SetIdentity("9999", _appSettings.Value.AdminAccount.Email, PolicyName.ADMIN);
+            return Ok(admin);
         }
 
         var user = await _userRepository.FoundOrThrow(
             u => u.Email.Equals(credentials.Email) && u.Password.Equals(credentials.Password),
             new ForbiddenException());
-        await SetIdentity(user.CustomerId.ToString(), user.Email, PolicyName.CUSTOMER);
-        return Ok();
+        var response = Mapper.Map(user, new LoginResponse());
+        response.Role = PolicyName.CUSTOMER;
+        //await SetIdentity(user.CustomerId.ToString(), user.Email, PolicyName.CUSTOMER);
+        return Ok(response);
     }
 
     private async Task SetIdentity(string userId, string email, string role)
@@ -52,15 +60,23 @@ public class AuthController : BaseController
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity));
+            new ClaimsPrincipal(claimsIdentity), new AuthenticationProperties { IsPersistent = true });
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterAccount req)
     {
         await ValidateRegisterFields(req);
-        await _userRepository.CreateAsync(Mapper.Map(req, new Customer()));
+        var user = Mapper.Map(req, new Customer());
+        user.CustomerId = await GetUserId();
+        await _userRepository.CreateAsync(user);
         return Ok();
+    }
+
+    private async Task<int> GetUserId()
+    {
+        var user = (await _userRepository.ToListAsync()).OrderByDescending(u => u.CustomerId).FirstOrDefault();
+        return user == null ? 1 : (user.CustomerId + 1);
     }
 
     private async Task ValidateRegisterFields(RegisterAccount req)
@@ -74,12 +90,6 @@ public class AuthController : BaseController
         if (isEmailExisted)
         {
             throw new BadRequestException("Email already existed");
-        }
-
-        var isIdExisted = (await _userRepository.FirstOrDefaultAsync(u => u.CustomerId == req.CustomerId)) != null;
-        if (isIdExisted)
-        {
-            throw new BadRequestException("UserId already existed");
         }
     }
 }
